@@ -38,11 +38,25 @@ with st.sidebar:
     st.title("⚙️ Filter")
     years     = sorted(df["purchase_year"].dropna().unique().astype(int))
     sel_years = st.multiselect("Tahun", years, default=years)
+    sel_cat   = st.multiselect("Kategori", df["main_category"].dropna().unique(), default=df["main_category"].dropna().unique())
+    sel_states = st.multiselect("Negara Bagian", df["customer_state"].dropna().unique(), default=df["customer_state"].dropna().unique())
+    sel_months = st.multiselect("Bulan", df["purchase_ym"].dropna().unique(), default=df["purchase_ym"].dropna().unique())
+    min_payment = st.number_input("Pembayaran Minimum", min_value=0, value=0)
     top_n     = st.slider("Top N Kategori", 5, 20, 10)
     st.markdown("---")
     st.caption("Satriyo Akbar Maulana\nDicoding · 2024")
 
-dff = df[df["purchase_year"].isin(sel_years)].copy()
+dff = df[
+    (df["purchase_year"].isin(sel_years)) &
+    (df["main_category"].isin(sel_cat)) &
+    (df["customer_state"].isin(sel_states)) &
+    (df["purchase_ym"].isin(sel_months)) &
+    (df["payment_value"] >= min_payment)
+].copy()
+
+if dff.empty:
+    st.warning("Data kosong, silakan ubah filter.")
+    st.stop()
 
 # ── KPI ────────────────────────────────────────────────────────────────────────
 st.subheader("📊 Key Metrics")
@@ -54,10 +68,13 @@ c4.metric("Keterlambatan",     f"{dff['is_late'].mean()*100:.1f}%")
 c5.metric("Avg Review Score",  f"{dff['review_score'].mean():.2f} ⭐")
 st.markdown("---")
 
+st.caption(
+    f"Filter aktif → Tahun: {sel_years} | Kategori: {len(sel_cat)} | State: {len(sel_states)} | Bulan: {len(sel_months)} | Pembayaran Minimum: R$ {min_payment:,.0f}"
+)
+
 # ══════════════════════════════════════════════════════════════════════════════
 # PERTANYAAN 1 — Revenue per Kategori
-# ══════════════════════════════════════════════════════════════════════════════
-st.markdown("## ❓ Pertanyaan 1")
+# ══════════════════════
 st.info("**Kategori produk apa yang menghasilkan total pendapatan tertinggi (2017–2018)?**")
 
 rev_cat = (
