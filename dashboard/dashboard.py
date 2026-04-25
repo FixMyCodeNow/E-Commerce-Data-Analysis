@@ -36,7 +36,8 @@ df = load_data()
 # ── Sidebar ────────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.title("⚙️ Filter")
-    years     = sorted(df["purchase_year"].dropna().unique().astype(int))
+    years = sorted(df["purchase_year"].dropna().unique().astype(int))
+    years = [y for y in years if y >= 2017]
     sel_years = st.multiselect("Tahun", years, default=years)
     sel_cat   = st.multiselect("Kategori", df["main_category"].dropna().unique(), default=df["main_category"].dropna().unique())
     sel_states = st.multiselect("Negara Bagian", df["customer_state"].dropna().unique(), default=df["customer_state"].dropna().unique())
