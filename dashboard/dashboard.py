@@ -78,7 +78,7 @@ st.caption(
 st.info("**Kategori produk apa yang menghasilkan total pendapatan tertinggi (2017–2018)?**")
 
 rev_cat = (
-    dff.groupby("main_category")["total_price"]
+    dff.groupby("main_category")["item_price"]
     .sum().sort_values(ascending=False).reset_index()
 )
 rev_cat.columns = ["category", "total_revenue"]
